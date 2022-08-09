@@ -85,6 +85,9 @@ func udp2icmp(udpConn *net.UDPConn) {
 			return
 		}
 		if session == nil {
+			if cfgRole == Client {
+				log.Printf("udp:%s unable to allocate new session", udpAddr)
+			}
 			continue
 		}
 		session.Refresh()
@@ -114,6 +117,10 @@ func icmp2udp() {
 		if n <= 8 {
 			continue
 		}
+		addr, _ := netip.AddrFromSlice(ipAddr.IP)
+		if cfgRole == Client && addr != cfgIcmpAddr {
+			continue
+		}
 		icmpType := ICMPType(buf[0])
 		if icmpType != cfgIcmpType(Recv) {
 			continue
@@ -123,7 +130,6 @@ func icmp2udp() {
 			continue
 		}
 		icmpId := binary.BigEndian.Uint16(buf[4:6])
-		addr, _ := netip.AddrFromSlice(ipAddr.IP)
 		icmpAddr := netip.AddrPortFrom(addr, icmpId)
 		session := getSession(IcmpTable, icmpAddr, cfgRole == Server)
 		if session == nil {

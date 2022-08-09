@@ -31,6 +31,7 @@ func (s *Session) Purge() {
 	mutex.Lock()
 	delete(udpTable, s.udpAddr)
 	delete(icmpTable, s.icmpAddr)
+	putIcmpId(s.icmpAddr.Port())
 	mutex.Unlock()
 	if s.udpConn != udpConn {
 		_ = s.udpConn.Close()
@@ -95,11 +96,11 @@ func getSession(tableId TableId, addr netip.AddrPort, c2s bool) *Session {
 	}
 	udpTable[session.udpAddr] = session
 	icmpTable[session.icmpAddr] = session
+	session.activity = time.Now()
 	mutex.Unlock()
 	if tableId == IcmpTable {
 		go udp2icmp(session.udpConn)
 	}
-	session.activity = time.Now()
 	go session.activityMonitor()
 	return session
 }

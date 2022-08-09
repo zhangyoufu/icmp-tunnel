@@ -30,6 +30,8 @@ func usage() {
 	fmt.Fprintf(flag.CommandLine.Output(), `Usage:
   client: %s [options] <UDP listen address:port> <ICMP server address>
   server: %s [options] <ICMP listen address> <UDP upstream address:port>
+
+Options:
 `, os.Args[0], os.Args[0])
 	flag.PrintDefaults()
 }

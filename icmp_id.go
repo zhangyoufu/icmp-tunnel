@@ -9,8 +9,9 @@ func init() {
 	rand.Seed(time.Now().UnixMilli())
 }
 
+// requires write lock
 func getIcmpId() uint16 {
-	return uint16(rand.Uint32()) % 1024
+	return uint16(rand.Uint32())
 }
 
 func putIcmpId(uint16) {
